@@ -1,3 +1,5 @@
+package DataStructures.Lists;
+
 /**
  * This class implements a SinglyLinked List. This is done
  * using SinglyLinkedList class and a LinkForLinkedList Class.
@@ -8,14 +10,25 @@
  * it grows and shrinks as it is edited. This is an example of
  * a singly linked list. Elements can only be added/removed
  * at the head/front of the list.
- *
- * @author yanglbme
  */
-class SinglyLinkedList {
+public class SinglyLinkedList {
     /**
      * Head refer to the front of the list
      */
     private Node head;
+
+    /**
+     * size of SinglyLinkedList
+     */
+    private int size;
+
+    /**
+     * init SinglyLinkedList
+     */
+    public SinglyLinkedList() {
+        head = new Node(0);
+        size = 0;
+    }
 
     /**
      * This method inserts an element at the head
@@ -23,9 +36,16 @@ class SinglyLinkedList {
      * @param x Element to be added
      */
     public void insertHead(int x) {
-        Node newNode = new Node(x);
-        newNode.next = head;
-        head = newNode;
+        insertNth(x, 0);
+    }
+
+    /**
+     * insert an element at the tail of list
+     *
+     * @param data Element to be added
+     */
+    public void insert(int data) {
+        insertNth(data, size);
     }
 
     /**
@@ -37,18 +57,16 @@ class SinglyLinkedList {
 
     public void insertNth(int data, int position) {
         if (position < 0 || position > getSize()) {
-            throw new RuntimeException("position less than zero or position more than the count of list");
-        }
-        else if (position == 0)
-            insertHead(data);
-        else {
+            throw new IndexOutOfBoundsException("position less than zero or position more than the count of list");
+        } else {
             Node cur = head;
             Node node = new Node(data);
-            for (int i = 1; i < position; ++i) {
+            for (int i = 0; i < position; ++i) {
                 cur = cur.next;
             }
             node.next = cur.next;
             cur.next = node;
+            size++;
         }
     }
 
@@ -58,28 +76,33 @@ class SinglyLinkedList {
      * @return The element deleted
      */
     public void deleteHead() {
-        if (isEmpty()) {
-            throw new RuntimeException("The list is empty!");
-        }
-
-        head = head.next;
+        deleteNth(0);
     }
 
     /**
-    * This method deletes an element at Nth position
-    */
+     * This method deletes an element at the tail
+     */
+    public void delete() {
+        deleteNth(size - 1);
+    }
+
+    /**
+     * This method deletes an element at Nth position
+     */
     public void deleteNth(int position) {
-         if (position < 0 || position > getSize()) {
-            throw new RuntimeException("position less than zero or position more than the count of list");
-        }
-        else if (position == 0)
-            deleteHead();
-        else {
+        if (position < 0 || position > size - 1) {
+            throw new IndexOutOfBoundsException("position less than zero or position more than the count of list");
+        } else {
             Node cur = head;
-            for (int i = 1; i < position; ++i) {
+            for (int i = 0; i < position; ++i) {
                 cur = cur.next;
             }
+
+            Node destroy = cur.next;
             cur.next = cur.next.next;
+            destroy = null; // clear to let GC do its work
+
+            size--;
         }
     }
 
@@ -89,14 +112,14 @@ class SinglyLinkedList {
      * @return true is list is empty
      */
     public boolean isEmpty() {
-        return getSize() == 0;
+        return size == 0;
     }
 
     /**
      * Prints contents of the list
      */
     public void display() {
-        Node current = head;
+        Node current = head.next;
         while (current != null) {
             System.out.print(current.value + " ");
             current = current.next;
@@ -105,20 +128,10 @@ class SinglyLinkedList {
     }
 
     /**
-    * Returns the size of the linked list
-    */
+     * Returns the size of the linked list
+     */
     public int getSize() {
-        if (head == null)
-            return 0;
-        else {
-            Node current = head;
-            int size = 1;
-            while (current.next != null) {
-                current = current.next;
-                size++;
-            }
-            return size;
-        }
+        return size;
     }
 
     /**
@@ -156,8 +169,6 @@ class SinglyLinkedList {
  * This class is the nodes of the SinglyLinked List.
  * They consist of a value and a pointer to the node
  * after them.
- *
- * @author yanglbme
  */
 class Node {
     /**
